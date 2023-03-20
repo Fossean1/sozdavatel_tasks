@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2.4</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        form {
+            margin: 10px;
+        }
+
+        label,
+        input {
+            display: block;
+        }
+
+        label[type="checkbox"] {
+            display: inline;
+        }
+
+        input,
+        textarea {
+            margin-bottom: 10px;
+        }
+
+        label {
+            margin-bottom: 5px;
+        }
+
+        textarea {
+            width: 250px;
+            height: 150px;
+        }
+
+        .inline * {
+            display: inline;
+        }
+    </style>
+</head>
+
+<body>
+    <form name="undoForm" id="undoForm">
+        <input name="undo" type="button" value="Undo" disabled />
+        <label for="name">Имя:</label>
+        <input name="name" id="name" />
+        <label for="email">Email:</label>
+        <input name="email" id="email" />
+        <label for="about_yourself">О себе:</label>
+        <textarea name="about_yourself" id="about_yourself"></textarea>
+        <div class="inline">
+            <input type="checkbox" name="agreement" id="agreement" />
+            <label for="agreement">Я согласен с условиями</label>
+        </div>
+    </form>
+    <script>
+        // Получение данных из элементов формы
+        function getValue(element) {
+            if (element.type === 'checkbox') {
+                return element.checked;
+            }
+            return element.value;
+        }
+
+        // Получение предыдущих данных из элементов формы
+        function getOldValue(element) {
+            if (element.type === 'checkbox') {
+                return element.oldChecked;
+            }
+            return element.oldValue;
+        }
+
+        // Сохранение данных в элемент формы
+        function setValue(element, value) {
+            if (element.type === 'checkbox') {
+                element.checked = value;
+            }
+            element.value = value;
+        }
+
+        // Сохранение предыдущих данных в элемент формы
+        function setOldValue(element) {
+            if (element.type === 'checkbox') {
+                element.oldChecked = element.checked;
+            }
+            element.oldValue = element.value;
+        }
+
+        // Стэк для хранения истории изменений формы
+        const history = [];
+
+        // Сохраняем предыдущее значение элемента в стэке
+        undoForm.addEventListener('change', (event) => {
+            history.push({
+                name: event.target.name,
+                value: getOldValue(event.target),
+            });
+            if (undoForm.undo.disabled) {
+                undoForm.undo.disabled = false;
+            }
+        });
+
+        const formElements = undoForm.querySelectorAll('input:not([type="button"]), textarea');
+
+        for (const elem of formElements) {
+            elem.addEventListener('focus', (event) => {
+                setOldValue(event.target);
+            })
+            elem.addEventListener('input', (event) => {
+                if (getOldValue(elem) !== getValue(elem)) {
+                    undoForm.undo.disabled = false;
+                } else {
+                    undoForm.undo.disabled = true;
+                }
+            })
+        }
+        undoForm.undo.addEventListener('click', (event) => {
+            const formElement = history.pop();
+            if (formElement) {
+                setValue(undoForm[formElement.name], formElement.value);
+            }
+            if (!history.length) {
+                undoForm.undo.disabled = true;
+            }
+        })
+
+    </script>
+</body>
+
+</html>

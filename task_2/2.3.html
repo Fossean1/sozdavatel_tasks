@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2.3</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        a {
+            color: #000;
+            text-decoration: none;
+        }
+
+        .container {
+            margin: 5px 25px;
+        }
+
+        ul {
+            list-style-type: none;
+        }
+
+        li ul {
+            margin-left: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <ul>
+            <li><a href="#">test 1</a></li>
+            <li><a href="#">test 2</a></li>
+            <li>
+                <a href="#">test 3</a>
+                <ul>
+                    <li><a href="#">test 3.1</a></li>
+                    <li><a href="#">test 3.2</a>
+                        <ul>
+                            <li><a href="#">test 3.2.1</a></li>
+                            <li><a href="#">test 3.2.2</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+    <script type="text/javascript">
+        function setPlusIcon() {
+            const liElements = document.body.querySelectorAll('li');
+            for (const liElement of liElements) {
+                for (const liChildren of liElement.children) {
+                    if (liChildren.tagName === 'UL') {
+                        liElement.querySelector('a').innerHTML = liElement.querySelector('a').innerHTML + ' <span class="plus">[+]</span>';
+                    }
+                }
+            }
+            const aElements = document.body.querySelectorAll('a');
+            for (const aElement of aElements) {
+                aElement.addEventListener('click', aClick);
+            }
+        }
+
+        function aClick(event) {
+            const aElement = event.target;
+            const liElement = aElement.parentNode;
+            const ulElement = liElement.querySelector('ul');
+            if (ulElement) {
+                const spanElement = liElement.querySelector('a span');
+                if (spanElement.classList.contains('plus')) {
+                    spanElement.classList.remove('plus');
+                    spanElement.classList.add('minus');
+                    spanElement.innerText = '[-]';
+                    ulElement.style.display = 'none';
+                } else {
+                    spanElement.classList.remove('minus');
+                    spanElement.classList.add('plus');
+                    spanElement.innerText = '[+]';
+                    ulElement.style.display = 'block';
+                }
+                event.preventDefault();
+            }
+        }
+
+        window.addEventListener('load', setPlusIcon);
+    </script>
+</body>
+
+</html>
